@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<title>Shop Admin</title>
+<style>
+[hidden]{display:none!important}
+:root{--bg:#060B11;--card:#0A121B;--ink:#F4EFE4;--mute:rgba(244,239,228,.58);--acc:#C9A961;--sun:#EBD9AB;--line:rgba(244,239,228,.12);--bad:#E8998F;--f:'Cormorant Garamond',Georgia,serif;--b:'Jost',system-ui,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;font:300 15px/1.55 var(--b);letter-spacing:.015em;color:var(--ink);background:radial-gradient(ellipse at 50% 105%,#2d2519 0%,#0c141c 42%,#060B11 78%) fixed,var(--bg)}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:2;opacity:.035;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+a{color:inherit;text-decoration:none}
+button,select{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--acc);outline-offset:4px}
+h1{font:300 clamp(30px,4vw,44px)/1 var(--f);letter-spacing:-.01em;margin:0}
+.btn{display:inline-block;background:var(--acc);color:#080D12;border:1px solid var(--acc);border-radius:0;padding:12px 22px;font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;transition:background .35s,color .35s,transform .45s cubic-bezier(.22,1,.36,1)}
+.btn:hover:not(:disabled){background:transparent;color:var(--sun);transform:translateY(-2px)}
+.btn.alt{background:transparent;color:var(--sun);border-color:#C9A96166}.btn.alt:hover:not(:disabled){border-color:var(--acc);background:#C9A96114}
+.btn.bad{background:transparent;color:var(--bad);border-color:#E8998F66}.btn.bad:hover:not(:disabled){border-color:var(--bad);background:#E8998F18;color:var(--bad)}
+.btn.sm{padding:7px 12px;font-size:10px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+input,textarea,select{width:100%;padding:11px 12px;border:1px solid #F4EFE426;border-radius:0;font:inherit;font-size:14px;background:#0D1721;color:var(--ink)}
+input:focus,textarea:focus,select:focus{outline:1px solid var(--acc);border-color:var(--acc)}
+textarea{resize:vertical}option{background:#0D1721;color:var(--ink)}
+input[type=file]{padding:9px;font-size:12px}
+label{display:grid;gap:6px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+.chk{display:flex;align-items:center;gap:10px;color:var(--ink)}.chk input{width:auto;accent-color:var(--acc)}
+.err{color:var(--bad);margin:0;font-size:13px}
+.note{color:var(--mute);padding:16px 0;font-size:13px;line-height:1.8}
+
+/* sign in = the storefront's gate card */
+#login{min-height:100vh;display:grid;place-items:center;padding:20px}
+#login form{width:min(410px,100%);display:grid;gap:14px;padding:38px 32px;background:rgba(6,11,17,.86);backdrop-filter:blur(18px);border:1px solid #C9A96159;box-shadow:0 35px 100px #0009}
+#login h1{font-size:40px;text-align:center}
+.sub{margin:-6px 0 8px;text-align:center;font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--acc)}
+
+/* header + nav = the storefront's header */
+header{position:sticky;top:0;z-index:8;display:flex;gap:22px;align-items:center;min-height:84px;padding:0 clamp(18px,4.5vw,64px);background:rgba(6,11,17,.78);backdrop-filter:blur(18px);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.logo{font:400 28px/.9 var(--f);letter-spacing:.15em}
+.logo::after{content:'ADMIN';display:block;margin-top:5px;font:400 8px/1 var(--b);letter-spacing:.25em;color:var(--acc)}
+nav{display:flex;gap:clamp(12px,2.5vw,34px);flex:1;margin-left:clamp(10px,3vw,40px)}
+nav button{position:relative;background:none;border:0;padding:8px 0;color:var(--mute);font-size:10px;font-weight:400;letter-spacing:.17em;text-transform:uppercase;transition:color .3s}
+nav button::after{content:'';position:absolute;left:0;right:100%;bottom:0;height:1px;background:var(--acc);transition:right .4s}
+nav button:hover,nav button.on{color:var(--sun)}nav button:hover::after,nav button.on::after{right:0}
+main{max-width:1240px;margin:0 auto;padding:clamp(28px,5vw,56px) clamp(18px,4.5vw,64px)}
+.bar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:22px}
+
+/* tables, orders, tags */
+.wrap{overflow-x:auto;background:linear-gradient(160deg,#0D1721,#080E15);border:1px solid #F4EFE41A}
+table{border-collapse:collapse;width:100%;min-width:640px}
+th,td{text-align:left;padding:16px 18px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--acc);font-weight:400}
+tbody tr{transition:background .3s}tbody tr:hover{background:#C9A96110}
+td:first-child{font:400 22px/1.1 var(--f)}
+tr:last-child td{border-bottom:0}
+td .btn+.btn{margin-left:6px}
+.tag{display:inline-block;font-size:9px;letter-spacing:.14em;text-transform:uppercase;padding:4px 9px;border:1px solid #C9A96166;color:var(--sun)}
+.tag.off{border-color:#E8998F66;color:var(--bad)}
+.ord{background:linear-gradient(160deg,#0D1721,#080E15);border:1px solid #F4EFE41A;padding:20px 22px;margin-bottom:14px;display:grid;gap:8px}
+.ord .top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center}
+.ord b{font:400 22px var(--f);color:var(--sun)}
+.ord ul{margin:0;padding-left:18px;color:var(--mute)}
+.ord select{width:auto;font-size:12px;padding:8px 10px}
+
+/* product dialog + storefront content form */
+dialog{border:1px solid #C9A96159;border-radius:0;padding:30px;width:min(520px,94vw);background:#080E15;color:var(--ink);box-shadow:0 35px 100px #000a}
+dialog::backdrop{background:#000b;backdrop-filter:blur(5px)}
+dialog form{display:grid;gap:14px}dialog h1{font-size:34px}
+#imagePreview{border:1px solid var(--line);background:#0D1721}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.acts{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+.cform{display:grid;gap:22px}
+.cform fieldset{margin:0;padding:22px 22px 24px;border:1px solid #F4EFE41A;background:linear-gradient(160deg,#0D1721,#080E15)}
+.cform legend{padding:0 10px;font:300 26px var(--f);color:var(--sun)}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}.fgrid .full{grid-column:1/-1}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#060B11;padding:11px 20px;font-size:12px;letter-spacing:.04em;opacity:0;pointer-events:none;transition:opacity .2s;z-index:70;max-width:90%}#toast.on{opacity:1}
+
+/* quiet sky behind everything: stars + one plane, same as the storefront */
+#bg{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+#bgStars{position:absolute;inset:0}
+.st{position:absolute;left:var(--x);top:var(--y);width:var(--s);height:var(--s);border-radius:50%;background:#fff;opacity:.5;animation:twk var(--d) ease-in-out var(--dl) infinite}
+.st.g{background:#EBD9AB;box-shadow:0 0 7px #C9A961}
+@keyframes twk{0%,100%{opacity:.08}50%{opacity:var(--o)}}
+.fl{position:absolute;top:24%;left:-100px;display:flex;align-items:center;opacity:0;animation:flyA 26s cubic-bezier(.45,0,.55,1) 3s infinite}
+.fl-trail{width:220px;height:1px;background:linear-gradient(90deg,#fff0,#ffffff0f 20%,#ffffff38 55%,#ffffff8c 90%,#ffffffd9)}
+.fl-glow{position:absolute;top:50%;right:-90px;width:180px;height:180px;margin-top:-90px;border-radius:50%;background:radial-gradient(circle,#ffffff24,#ffffff0d 30%,transparent 60%)}
+.fl-plane{position:relative;width:64px;height:26px;color:#fff;flex-shrink:0}
+@keyframes flyA{0%{transform:translate3d(-10vw,10vh,0) rotate(-6deg);opacity:0}4%{opacity:.9}50%{transform:translate3d(50vw,3vh,0) rotate(-3.5deg);opacity:.9}96%{opacity:.9}100%{transform:translate3d(120vw,-14vh,0) rotate(-6deg);opacity:0}}
+@media(max-width:700px){header{padding-block:12px}nav{order:5;flex-basis:100%;margin-left:0}.row{grid-template-columns:1fr}.fl-plane{width:44px;height:18px}}
+@media(prefers-reduced-motion:reduce){.fl{display:none}.st{animation:none!important}*{transition:none!important}}
+
+/* Custom order design preview */
+.custom-order{display:flex;align-items:flex-start;gap:14px;margin:12px 0 4px;padding:12px;border:1px solid #C9A96144;background:#060B11;max-width:660px}
+.custom-order img{width:150px;max-width:32%;aspect-ratio:4/5;object-fit:contain;background:#0D1721;border:1px solid #F4EFE426;flex-shrink:0}
+.custom-order .custom-meta{min-width:0;display:grid;gap:5px;color:var(--mute);font-size:12px;line-height:1.65;overflow-wrap:anywhere}
+.custom-order .custom-meta strong{color:var(--sun);font-weight:400;font-size:15px}
+.custom-order a{color:var(--sun);text-decoration:underline;text-underline-offset:3px;margin-right:12px}
+@media(max-width:560px){.custom-order{gap:10px;padding:9px}.custom-order img{width:100px}}
+
+</style>
+</head>
+<body>
+<div id="bg" aria-hidden="true">
+  <svg width="0" height="0" style="position:absolute"><defs><path id="bgPlane" d="M58 12 C48 10 40 10 32 10.5 L22 3 L18 3 L24 10.5 L10 11 L4 7 L1 7 L4 12 L1 17 L4 17 L10 13 L24 13.5 L18 21 L22 21 L32 13.5 C40 14 48 14 58 12 Z"/></defs></svg>
+  <div id="bgStars"></div>
+  <div class="fl"><div class="fl-trail"></div><div class="fl-glow"></div><svg class="fl-plane" viewBox="0 0 60 24" fill="currentColor"><use href="#bgPlane"/></svg></div>
+</div>
+<section id="login">
+  <form id="lf">
+    <h1>Team sign in</h1>
+    <p class="sub">SHOPYK admin</p>
+    <label>Email<input name="email" type="email" required autocomplete="username"></label>
+    <label>Password<input name="password" type="password" required autocomplete="current-password"></label>
+    <button class="btn">Sign in</button>
+    <p id="le" class="err" role="alert"></p>
+  </form>
+</section>
+
+<section id="app" hidden>
+  <header>
+    <h1 class="logo">SHOPYK</h1>
+    <nav><button data-tab="products">Products</button><button data-tab="orders">Orders</button><button data-tab="content">Storefront</button></nav>
+    <a class="btn alt sm" href="/" target="_blank" rel="noopener">View shop</a>
+    <button id="out" class="btn alt sm">Sign out</button>
+  </header>
+  <main id="main"></main>
+</section>
+
+<dialog id="dlg">
+  <form id="pf">
+    <h1 id="dt">Product</h1>
+    <label>Name<input name="name" required maxlength="120"></label>
+    <div class="row">
+      <label>Price (₹)<input name="price" type="number" min="0" step="0.01" required></label>
+      <label>Stock<input name="stock" type="number" min="0" step="1" required></label>
+    </div>
+    <label>Category<input name="category" maxlength="40" placeholder="General"></label>
+    <input type="hidden" name="image" id="productImagePath">
+    <label>Product photo (optional)<input name="imageFile" id="productImageFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif"></label>
+    <div id="imagePreviewWrap" hidden>
+      <img id="imagePreview" alt="Product image preview" style="max-width:180px;max-height:180px;object-fit:contain">
+      <button type="button" id="removeImage" class="btn alt sm">Remove photo</button>
+    </div>
+    <p class="note" style="padding:0">JPG, PNG, WebP or GIF · Maximum 5 MB.</p>
+    <label>Description<textarea name="description" rows="3" maxlength="1000"></textarea></label>
+    <label class="chk"><input name="active" type="checkbox" checked> Visible in the store</label>
+    <p id="pe" class="err" role="alert"></p>
+    <div class="acts"><button type="button" id="cancel" class="btn alt">Cancel</button><button class="btn">Save product</button></div>
+  </form>
+</dialog>
+
+<div id="toast" role="status"></div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const inr = (p) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(p / 100);
+const STATUSES = ['placed', 'confirmed', 'shipped', 'delivered', 'cancelled'];
+let token = '', tab = 'products', products = [], editing = null;
+try { token = sessionStorage.getItem('t') || ''; } catch {}
+
+async function api(path, method = 'GET', body) {
+  const r = await fetch('/api/admin' + path, { method, headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }, body: body ? JSON.stringify(body) : undefined });
+  const d = await r.json().catch(() => ({}));
+  if (r.status === 401) { signOut(); throw new Error('Please sign in again.'); }
+  if (!r.ok) throw new Error(d.error || 'Request failed.');
+  return d;
+}
+function show() { $('#login').hidden = !!token; $('#app').hidden = !token; if (token) render(); }
+function signOut() { token = ''; try { sessionStorage.removeItem('t'); } catch {} show(); }
+
+$('#lf').onsubmit = async (e) => {
+  e.preventDefault(); $('#le').textContent = '';
+  try {
+    const r = await fetch('/api/admin/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.fromEntries(new FormData(e.target))) });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(d.error || 'Sign in failed.');
+    token = d.token; try { sessionStorage.setItem('t', token); } catch {}
+    e.target.reset(); show();
+  } catch (err) { $('#le').textContent = err.message; }
+};
+$('#out').onclick = signOut;
+document.querySelectorAll('nav button').forEach((b) => b.onclick = () => { tab = b.dataset.tab; render(); });
+
+async function render() {
+  document.querySelectorAll('nav button').forEach((b) => b.classList.toggle('on', b.dataset.tab === tab));
+  const m = $('#main'); m.innerHTML = '<p class="note">Loading…</p>';
+  try {
+    if (tab === 'products') { products = await api('/products'); m.innerHTML = productsHtml(); }
+    else if (tab === 'content') { const s = await fetch('/api/content').then((r) => r.ok ? r.json() : {}).catch(() => ({})); m.innerHTML = contentHtml({ ...CD, ...s }); }
+    else m.innerHTML = ordersHtml(await api('/orders'));
+  } catch (err) { if (token) m.innerHTML = `<p class="err">${esc(err.message)}</p>`; }
+}
+
+const productsHtml = () => `<div class="bar"><h1>Products (${products.length})</h1><button class="btn" data-new>Add product</button></div>
+  <div class="wrap"><table><thead><tr><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Status</th><th></th></tr></thead><tbody>
+  ${products.map((p) => `<tr><td>${esc(p.name)}</td><td>${esc(p.category)}</td><td>${inr(p.price_paise)}</td><td>${p.stock}</td>
+  <td><span class="tag${p.active ? '' : ' off'}">${p.active ? 'Visible' : 'Hidden'}</span></td>
+  <td><button class="btn alt sm" data-edit="${p.id}">Edit</button><button class="btn bad sm" data-del="${p.id}">Delete</button></td></tr>`).join('') || '<tr><td colspan="6" class="note">No products yet. Add your first one.</td></tr>'}
+  </tbody></table></div>`;
+
+const ordersHtml = (orders) => `<div class="bar"><h1>Orders (${orders.length})</h1><button class="btn alt" data-refresh>Refresh</button></div>`
+  + (orders.map((o) => `<div class="ord"><div class="top"><b>Order #${o.id}</b>
+    <span>${new Date(o.created_at.replace(' ', 'T') + 'Z').toLocaleString('en-IN')}</span>
+    <span class="tag">${esc(o.payment_status)}</span>
+    <select data-status="${o.id}" aria-label="Order status">${STATUSES.map((s) => `<option${s === o.status ? ' selected' : ''}>${s}</option>`).join('')}</select></div>
+    <div>${esc(o.name)} · ${esc(o.phone)}${o.email ? ' · ' + esc(o.email) : ''}</div>
+    <div>${esc(o.address)}, ${esc(o.pincode)}</div>
+    <ul>${o.items.map((i) => {
+      const c = i.customization;
+      const image = c && (c.previewUrl || c.artworkUrl);
+      const custom = c ? `<div class="custom-order">${image ? `<img src="${esc(image)}" alt="Custom T-shirt mockup for order ${o.id}" loading="lazy">` : ''}<div class="custom-meta"><strong>Personalised T-shirt · ${esc(c.size || 'Size not specified')}</strong><span>${esc(c.description || 'Custom design submitted by the customer.')}</span><span>Garment colour: ${esc(c.shirtColorName || c.shirtColor || 'Not specified')} · Print side: ${esc(c.printSide || 'front')} · Placement: ${esc((c.placement || 'center').replace('-', ' '))}</span>${c.customText ? `<span>Custom text: “${esc(c.customText)}” · Text colour: ${esc(c.textColor || 'default')}</span>` : ''}<span>${c.artworkName ? `Uploaded artwork: ${esc(c.artworkName)}` : 'No separate artwork file (text/mockup only).'}</span><span>${c.previewUrl ? `<a href="${esc(c.previewUrl)}" target="_blank" rel="noopener">Open mockup</a>` : ''}${c.artworkUrl && c.artworkUrl !== c.previewUrl ? `<a href="${esc(c.artworkUrl)}" target="_blank" rel="noopener">Open original artwork</a>` : ''}</span></div></div>` : '';
+      return `<li>${esc(i.name)} × ${i.qty} — ${inr(i.price_paise * i.qty)}${custom}</li>`;
+    }).join('')}</ul>
+    <b>Total ${inr(o.total_paise)}</b></div>`).join('') || '<p class="note">No orders yet.</p>');
+
+const imageFileInput = $('#productImageFile');
+const imagePathInput = $('#productImagePath');
+const imagePreviewWrap = $('#imagePreviewWrap');
+const imagePreview = $('#imagePreview');
+let previewUrl = '';
+
+function clearPreviewUrl() {
+  if (previewUrl) URL.revokeObjectURL(previewUrl);
+  previewUrl = '';
+}
+function showImagePreview(src) {
+  clearPreviewUrl();
+  if (src) imagePreview.src = src;
+  else imagePreview.removeAttribute('src');
+  imagePreviewWrap.hidden = !src;
+}
+
+imageFileInput.addEventListener('change', () => {
+  const file = imageFileInput.files[0];
+  if (!file) return;
+  if (!['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(file.type)) {
+    alert('Choose a JPG, PNG, WebP or GIF image.');
+    imageFileInput.value = '';
+    return;
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    alert('Image must be 5 MB or smaller.');
+    imageFileInput.value = '';
+    return;
+  }
+  clearPreviewUrl();
+  previewUrl = URL.createObjectURL(file);
+  imagePreview.src = previewUrl;
+  imagePreviewWrap.hidden = false;
+});
+
+$('#removeImage').addEventListener('click', () => {
+  imageFileInput.value = '';
+  imagePathInput.value = '';
+  showImagePreview('');
+});
+
+function openForm(p) {
+  editing = p ? p.id : null; $('#pe').textContent = ''; $('#dt').textContent = p ? 'Edit product' : 'Add product';
+  const f = $('#pf'); f.reset();
+  imagePathInput.value = p?.image ?? '';
+  imageFileInput.value = '';
+  showImagePreview(p?.image || '');
+  if (p) {
+    for (const k of ['name', 'category', 'stock', 'description']) f.elements.namedItem(k).value = p[k] ?? '';
+    f.elements.namedItem('price').value = p.price_paise / 100; f.elements.namedItem('active').checked = !!p.active;
+  }
+  $('#dlg').showModal();
+}
+$('#cancel').onclick = () => $('#dlg').close();
+$('#pf').onsubmit = async (e) => {
+  e.preventDefault();
+  const f = e.target, b = f.querySelector('.acts button.btn:not(.alt)');
+  b.disabled = true; $('#pe').textContent = '';
+  try {
+    const fd = new FormData(f);
+    const file = fd.get('imageFile');
+    const v = Object.fromEntries(fd);
+    delete v.imageFile;
+    v.active = f.elements.namedItem('active').checked;
+
+    // Upload only when a new photo was selected; otherwise keep the existing path.
+    if (file instanceof File && file.size > 0) {
+      const data = new FormData();
+      data.append('image', file);
+      const response = await fetch('/api/admin/upload', {
+        method: 'POST',
+        headers: { Authorization: 'Bearer ' + token },
+        body: data,
+      });
+      const result = await response.json().catch(() => ({}));
+      if (response.status === 401) { signOut(); throw new Error('Please sign in again.'); }
+      if (!response.ok) throw new Error(result.error || 'Image upload failed.');
+      v.image = result.image;
+    }
+
+    await (editing ? api('/products/' + editing, 'PUT', v) : api('/products', 'POST', v));
+    $('#dlg').close(); render();
+  } catch (err) {
+    $('#pe').textContent = err.message;
+  } finally {
+    b.disabled = false;
+  }
+};
+
+document.addEventListener('click', async (e) => {
+  const d = e.target.dataset || {};
+  try {
+    if ('new' in d) openForm();
+    else if (d.edit) openForm(products.find((p) => p.id === Number(d.edit)));
+    else if (d.del && confirm('Delete this product? Past orders keep their details.')) { await api('/products/' + d.del, 'DELETE'); render(); }
+    else if ('refresh' in d) render();
+    else if ('reset' in d) FIELDS.forEach(([k]) => { $('#cf').elements.namedItem(k).value = CD[k]; });
+  } catch (err) { alert(err.message); }
+});
+document.addEventListener('change', async (e) => {
+  if (!e.target.dataset.status) return;
+  try { await api('/orders/' + e.target.dataset.status, 'PATCH', { status: e.target.value }); }
+  catch (err) { alert(err.message); }
+  render();
+});
+
+/* Storefront content editor: saved through PUT /api/admin/content, read by the shop from GET /api/content */
+const CD = { brand: 'SHOPYK', tagline: 'Everything you love, on its way to you.', gate_title: 'Welcome to SHOPYK', gate_text: 'Sign in to explore products and start shopping.', greeting: 'Welcome back, {name}', guest_greeting: 'Welcome, guest', headline: 'Objects of *everyday distinction.*', intro: 'A considered collection of everyday essentials, designed to make the ordinary feel exceptional. Discover pieces chosen for utility, character and lasting style.', cta1: 'Explore the collection', cta2: 'Meet our contributors', sponsors_title: 'Our sponsors', sponsors: 'Krishna Pal\nRohan Singh', shop_title: 'Objects of *the collection*', how_title: 'A more considered *way to shop.*', step1_title: 'Browse', step1_text: 'Filter by category or search by name.', step2_title: 'Add to cart', step2_text: 'Change quantities any time. Your cart is saved on this device.', step3_title: 'Check out', step3_text: 'Enter your delivery details. We will call you to arrange delivery.', footer: 'SHOPYK · Considered essentials, selected for you. · Orders are confirmed by phone.' };
+const FIELDS = [['brand', 'Brand name'], ['tagline', 'Intro animation tagline'], ['gate_title', 'Sign-in title'], ['gate_text', 'Sign-in text'],
+  ['greeting', 'Greeting for signed-in users ({name} becomes their first name)'], ['guest_greeting', 'Greeting for guests'],
+  ['headline', 'Hero headline'], ['intro', 'Hero introduction', 1], ['cta1', 'Primary button'], ['cta2', 'Secondary button'],
+  ['sponsors_title', 'Sponsors heading'], ['sponsors', 'Sponsors (one per line)', 1], ['shop_title', 'Products heading'], ['how_title', 'How it works heading'],
+  ['step1_title', 'Step 1 title'], ['step1_text', 'Step 1 text'], ['step2_title', 'Step 2 title'], ['step2_text', 'Step 2 text'],
+  ['step3_title', 'Step 3 title'], ['step3_text', 'Step 3 text'], ['footer', 'Footer text']];
+const GROUPS = [['Brand and intro animation', ['brand', 'tagline']], ['Sign-in screen', ['gate_title', 'gate_text', 'greeting', 'guest_greeting']], ['Hero', ['headline', 'intro', 'cta1', 'cta2']], ['Sponsors', ['sponsors_title', 'sponsors']], ['Products section', ['shop_title']], ['How it works', ['how_title', 'step1_title', 'step1_text', 'step2_title', 'step2_text', 'step3_title', 'step3_text']], ['Footer', ['footer']]];
+const field = (c, k) => { const [, l, big] = FIELDS.find((f) => f[0] === k); return `<label${big ? ' class="full"' : ''}>${l}${big
+  ? `<textarea name="${k}" rows="${k === 'sponsors' ? 5 : 3}" maxlength="1500">${esc(c[k])}</textarea>`
+  : `<input name="${k}" maxlength="300" value="${esc(c[k])}">`}</label>`; };
+const contentHtml = (c) => `<div class="bar"><h1>Storefront content</h1></div>
+  <p class="note">Changes appear on the shop the next time it loads. Wrap words in *stars* to show them in gold, for example: Objects of *everyday distinction.*</p>
+  <form id="cf" class="cform">${GROUPS.map(([t, ks]) => `<fieldset><legend>${t}</legend><div class="fgrid">${ks.map((k) => field(c, k)).join('')}</div></fieldset>`).join('')}
+  <p id="ce" class="err" role="alert"></p><div class="acts"><button type="button" class="btn alt" data-reset>Reset to defaults</button><button class="btn">Save storefront</button></div></form>`;
+document.addEventListener('submit', async (e) => {
+  if (e.target.id !== 'cf') return;
+  e.preventDefault(); const b = e.target.querySelector('button:not(.alt)'); b.disabled = true; $('#ce').textContent = '';
+  try { await api('/content', 'PUT', Object.fromEntries(new FormData(e.target))); toast('Storefront updated. Reload the shop to see it.'); }
+  catch (err) { $('#ce').textContent = err.message; } finally { b.disabled = false; }
+});
+
+let tt; const toast = (m) => { const t = $('#toast'); t.textContent = m; t.classList.add('on'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('on'), 3200); };
+(() => { const r = (a, b) => a + Math.random() * (b - a); let h = '';
+  for (let i = 0; i < 60; i++) h += `<i class="st${Math.random() < .18 ? ' g' : ''}" style="--x:${r(0, 100).toFixed(1)}%;--y:${r(0, 100).toFixed(1)}%;--s:${r(1, 2.2).toFixed(1)}px;--o:${r(.4, .9).toFixed(2)};--d:${r(3, 8).toFixed(1)}s;--dl:-${r(0, 8).toFixed(1)}s"></i>`;
+  $('#bgStars').innerHTML = h; })();
+
+show();
+</script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "brand": "SHOPYK",
+  "tagline": "Everything you love, on its way to you.",
+  "gate_title": "Welcome to SHOPYK",
+  "gate_text": "Sign in to explore products and start shopping.",
+  "greeting": "Welcome back, {name}",
+  "guest_greeting": "Welcome, guest",
+  "headline": "Objects of *everyday distinction.*",
+  "intro": "A considered collection of everyday essentials, designed to make the ordinary feel exceptional. Discover pieces chosen for utility, character and lasting style.",
+  "cta1": "Explore the collection",
+  "cta2": "Meet our contributors",
+  "sponsors_title": "Our sponsors",
+  "sponsors": "Krishna Pal\nRohan Singh",
+  "shop_title": "Objects of *the collection*",
+  "how_title": "A more considered *way to shop.*",
+  "step1_title": "Browse",
+  "step1_text": "Filter by category or search by name.",
+  "step2_title": "Add to cart",
+  "step2_text": "Change quantities any time. Your cart is saved on this device.",
+  "step3_title": "Check out",
+  "step3_text": "Enter your delivery details. We will call you to arrange delivery.",
+  "footer": "SHOPYK · Considered essentials, selected for you. · Orders are confirmed by phone."
+}

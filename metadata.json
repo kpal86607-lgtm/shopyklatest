@@ -1,0 +1,6 @@
+{
+  "name": "SHOPYK E-Commerce & Admin Studio",
+  "description": "Considered luxury essentials storefront with live T-shirt customizer and real-time synchronized admin dashboard.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
